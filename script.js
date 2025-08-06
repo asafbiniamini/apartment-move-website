@@ -1,5 +1,6 @@
 // App State
 let currentArea = 'kitchen';
+let currentUser = null;
 let items = {
     kitchen: [],
     bedroom: [],
@@ -781,13 +782,134 @@ function openEditModal(itemId) {
     }
 }
 
+// Authentication Functions
+function checkAuth() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showUserInterface();
+        loadUserData();
+    } else {
+        showLoginModal();
+    }
+}
+
+function showLoginModal() {
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.classList.add('show');
+    }
+}
+
+function hideLoginModal() {
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.classList.remove('show');
+    }
+}
+
+function showUserInterface() {
+    const userInfo = document.getElementById('user-info');
+    const currentUserSpan = document.getElementById('current-user');
+    
+    if (userInfo && currentUserSpan) {
+        userInfo.style.display = 'flex';
+        currentUserSpan.textContent = `Welcome, ${currentUser.username}!`;
+    }
+}
+
+function hideUserInterface() {
+    const userInfo = document.getElementById('user-info');
+    if (userInfo) {
+        userInfo.style.display = 'none';
+    }
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    
+    if (users[username] && users[username].password === password) {
+        currentUser = { username };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        hideLoginModal();
+        showUserInterface();
+        loadUserData();
+        showNotification('Login successful!', 'success');
+    } else {
+        showNotification('Invalid username or password', 'error');
+    }
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const username = document.getElementById('register-username').value;
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm-password').value;
+    
+    if (password !== confirmPassword) {
+        showNotification('Passwords do not match', 'error');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    
+    if (users[username]) {
+        showNotification('Username already exists', 'error');
+        return;
+    }
+    
+    users[username] = { password };
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    currentUser = { username };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    hideLoginModal();
+    showUserInterface();
+    showNotification('Registration successful!', 'success');
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    hideUserInterface();
+    showLoginModal();
+    items = {
+        kitchen: [],
+        bedroom: [],
+        living: [],
+        bathroom: [],
+        garden: [],
+        office: []
+    };
+    renderItems();
+    updateStats();
+}
+
+function loadUserData() {
+    const userData = localStorage.getItem(`userData_${currentUser.username}`);
+    if (userData) {
+        items = JSON.parse(userData);
+        renderItems();
+        updateStats();
+        updateOverallBudget();
+    }
+}
+
+function saveUserData() {
+    if (currentUser) {
+        localStorage.setItem(`userData_${currentUser.username}`, JSON.stringify(items));
+    }
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     initializeDOMElements();
-    loadData();
     setupEventListeners();
-    renderItems();
-    updateStats();
+    checkAuth();
 });
 
 // Event Listeners
@@ -960,6 +1082,46 @@ function setupEventListeners() {
     
     // Priority Button Event Listeners
     setupPriorityButtons();
+    
+    // Login System Event Listeners
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const logoutBtn = document.getElementById('logout-btn');
+    const closeLoginModalBtn = document.getElementById('close-login-modal');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    if (registerForm) {
+        registerForm.addEventListener('submit', handleRegister);
+    }
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+    
+    if (closeLoginModalBtn) {
+        closeLoginModalBtn.addEventListener('click', hideLoginModal);
+    }
+    
+    // Tab switching for login/register
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.dataset.tab;
+            
+            // Update active tab
+            tabBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide forms
+            document.querySelectorAll('.login-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(`${tab}-form`).classList.add('active');
+        });
+    });
 }
 
 // Area Navigation
@@ -1157,17 +1319,44 @@ function updateStats() {
     totalItemsEl.textContent = totalItems;
     totalBudgetEl.textContent = `₪${totalBudget.toFixed(2)}`;
     completedItemsEl.textContent = completedItems;
+    
+    // Update overall budget summary
+    updateOverallBudget();
+}
+
+// Update Overall Budget Summary
+function updateOverallBudget() {
+    const areas = ['kitchen', 'bedroom', 'living', 'bathroom', 'garden', 'office'];
+    let overallTotal = 0;
+    
+    areas.forEach(area => {
+        const areaBudget = items[area].reduce((sum, item) => sum + item.price, 0);
+        const budgetElement = document.getElementById(`${area}-budget`);
+        if (budgetElement) {
+            budgetElement.textContent = `₪${areaBudget.toFixed(2)}`;
+        }
+        overallTotal += areaBudget;
+    });
+    
+    const overallTotalElement = document.getElementById('overall-total-budget');
+    if (overallTotalElement) {
+        overallTotalElement.textContent = `₪${overallTotal.toFixed(2)}`;
+    }
 }
 
 // Data Persistence
 function saveData() {
-    localStorage.setItem('apartmentMoveData', JSON.stringify(items));
+    if (currentUser) {
+        localStorage.setItem(`userData_${currentUser.username}`, JSON.stringify(items));
+    }
 }
 
 function loadData() {
-    const savedData = localStorage.getItem('apartmentMoveData');
-    if (savedData) {
-        items = JSON.parse(savedData);
+    if (currentUser) {
+        const savedData = localStorage.getItem(`userData_${currentUser.username}`);
+        if (savedData) {
+            items = JSON.parse(savedData);
+        }
     }
 }
 

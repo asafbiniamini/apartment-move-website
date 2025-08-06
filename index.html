@@ -15,6 +15,12 @@
             <div class="header-content">
                 <h1><i class="fas fa-home"></i> Our Apartment Move</h1>
                 <p class="subtitle">Planning our new home together</p>
+                <div class="user-info" id="user-info" style="display: none;">
+                    <span id="current-user">Welcome!</span>
+                    <button class="logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -78,12 +84,47 @@
                     <span class="stat-value" id="total-items">0</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-label">Total Budget:</span>
+                    <span class="stat-label">Area Budget:</span>
                     <span class="stat-value" id="total-budget">₪0</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">Completed:</span>
                     <span class="stat-value" id="completed-items">0</span>
+                </div>
+            </div>
+            
+            <!-- Overall Budget Summary -->
+            <div class="overall-budget-summary">
+                <h3><i class="fas fa-calculator"></i> Overall Budget Summary</h3>
+                <div class="budget-breakdown">
+                    <div class="budget-item">
+                        <span class="area-name">Kitchen:</span>
+                        <span class="area-budget" id="kitchen-budget">₪0</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="area-name">Bedroom:</span>
+                        <span class="area-budget" id="bedroom-budget">₪0</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="area-name">Living Room:</span>
+                        <span class="area-budget" id="living-budget">₪0</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="area-name">Bathroom:</span>
+                        <span class="area-budget" id="bathroom-budget">₪0</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="area-name">Garden:</span>
+                        <span class="area-budget" id="garden-budget">₪0</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="area-name">Office:</span>
+                        <span class="area-budget" id="office-budget">₪0</span>
+                    </div>
+                    <div class="budget-item total">
+                        <span class="area-name">TOTAL:</span>
+                        <span class="area-budget" id="overall-total-budget">₪0</span>
+                    </div>
                 </div>
             </div>
 
@@ -373,6 +414,58 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user"></i> Welcome to Apartment Move</h3>
+                <button class="close-btn" id="close-login-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="login-content">
+                <div class="login-tabs">
+                    <button class="tab-btn active" data-tab="login">Login</button>
+                    <button class="tab-btn" data-tab="register">Register</button>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="login-form" class="login-form active">
+                    <div class="form-group">
+                        <label for="login-username">Username:</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password:</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Login</button>
+                    </div>
+                </form>
+                
+                <!-- Register Form -->
+                <form id="register-form" class="login-form">
+                    <div class="form-group">
+                        <label for="register-username">Username:</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password:</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password:</label>
+                        <input type="password" id="register-confirm-password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Sweet Home 3D Quick Guide Modal -->
     <div class="modal" id="quick-guide-modal">
         <div class="modal-content">
@@ -460,6 +553,9 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/photo-sphere-viewer@4.0.5/dist/photo-sphere-viewer.js"></script>
     <script src="script.js"></script>
 </body>
