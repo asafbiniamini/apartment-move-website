@@ -956,6 +956,41 @@ function handleRegister(e) {
     showNotification('Registration successful!', 'success');
 }
 
+function handleAdminLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('admin-username').value.trim();
+    const password = document.getElementById('admin-password').value.trim();
+    
+    if (!username || !password) {
+        showNotification('Please enter both username and password', 'error');
+        return;
+    }
+    
+    // Check for admin credentials
+    if (username === 'Asaf' && password === 'Eden') {
+        currentUser = { username: 'Asaf Eden' };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Ensure admin user exists in users list
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (!users['Asaf Eden']) {
+            users['Asaf Eden'] = { password: 'Eden' };
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        
+        // Load user data
+        loadUserData();
+        
+        // Hide login modal and show user interface
+        hideLoginModal();
+        showUserInterface();
+        
+        showNotification(`Welcome back, Asaf Eden!`, 'success');
+    } else {
+        showNotification('Invalid admin credentials', 'error');
+    }
+}
+
 function logout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
@@ -1520,6 +1555,7 @@ function setupEventListeners() {
     // Login System Event Listeners
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
+    const adminForm = document.getElementById('admin-form');
     const logoutBtn = document.getElementById('logout-btn');
     const closeLoginModalBtn = document.getElementById('close-login-modal');
     
@@ -1529,6 +1565,10 @@ function setupEventListeners() {
     
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
+    }
+    
+    if (adminForm) {
+        adminForm.addEventListener('submit', handleAdminLogin);
     }
     
     if (logoutBtn) {
@@ -1614,11 +1654,30 @@ function setupEventListeners() {
         quickAdminBtn.addEventListener('click', quickAdminAccess);
     }
     
-    // Password Toggle
+    // Password Toggle for Login
     const loginPasswordToggle = document.getElementById('login-password-toggle');
     if (loginPasswordToggle) {
         loginPasswordToggle.addEventListener('click', function() {
             const passwordInput = document.getElementById('login-password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+                this.classList.add('show-password');
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fas fa-eye';
+                this.classList.remove('show-password');
+            }
+        });
+    }
+    
+    // Password Toggle for Admin
+    const adminPasswordToggle = document.getElementById('admin-password-toggle');
+    if (adminPasswordToggle) {
+        adminPasswordToggle.addEventListener('click', function() {
+            const passwordInput = document.getElementById('admin-password');
             const icon = this.querySelector('i');
             
             if (passwordInput.type === 'password') {

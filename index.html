@@ -24,11 +24,7 @@
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
-                <div class="login-actions" id="login-actions">
-                    <button class="quick-admin-btn" id="quick-admin-btn">
-                        <i class="fas fa-crown"></i> Admin Access
-                    </button>
-                </div>
+
             </div>
         </header>
 
@@ -440,6 +436,7 @@
                 <div class="login-tabs">
                     <button class="tab-btn active" data-tab="login">Login</button>
                     <button class="tab-btn" data-tab="register">Register</button>
+                    <button class="tab-btn admin-tab" data-tab="admin">Admin</button>
                 </div>
                 
                 <!-- Login Form -->
@@ -478,6 +475,26 @@
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">Register</button>
+                    </div>
+                </form>
+                
+                <!-- Admin Form -->
+                <form id="admin-form" class="login-form">
+                    <div class="form-group">
+                        <label for="admin-username">Admin Username:</label>
+                        <input type="text" id="admin-username" value="Asaf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Admin Password:</label>
+                        <div class="password-container">
+                            <input type="password" id="admin-password" value="Eden" required>
+                            <button type="button" class="password-toggle" id="admin-password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Admin Login</button>
                     </div>
                 </form>
             </div>

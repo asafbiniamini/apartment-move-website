@@ -1433,6 +1433,21 @@ body {
     border-bottom-color: #ff6b9d;
 }
 
+.admin-tab {
+    background: linear-gradient(135deg, #6f42c1, #5a32a3);
+    color: white;
+    border-radius: 6px 6px 0 0;
+}
+
+.admin-tab:hover {
+    background: linear-gradient(135deg, #5a32a3, #4c2a8a);
+}
+
+.admin-tab.active {
+    color: white;
+    border-bottom-color: #6f42c1;
+}
+
 .tab-btn:hover {
     color: #ff6b9d;
 }
