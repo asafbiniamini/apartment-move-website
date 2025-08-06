@@ -1258,6 +1258,49 @@ function backToAdmin() {
     showNotification('Back to admin view', 'info');
 }
 
+function quickAdminAccess() {
+    // Direct admin access
+    currentUser = { username: 'Asaf Eden' };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Ensure admin user exists in users list
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (!users['Asaf Eden']) {
+        users['Asaf Eden'] = { password: 'Eden' };
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+    
+    // Load user data
+    loadUserData();
+    
+    // Hide login modal and show user interface
+    hideLoginModal();
+    showUserInterface();
+    
+    showNotification('Quick admin access granted!', 'success');
+}
+
+function showAllData() {
+    console.log('=== ALL LOCALSTORAGE DATA ===');
+    console.log('Current User:', localStorage.getItem('currentUser'));
+    console.log('Users:', localStorage.getItem('users'));
+    
+    // Show all user data
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    Object.keys(users).forEach(username => {
+        const userData = localStorage.getItem(`userData_${username}`);
+        console.log(`User ${username}:`, userData);
+    });
+    
+    // Show old data if exists
+    const oldData = localStorage.getItem('apartmentMoveData');
+    if (oldData) {
+        console.log('Old Data:', oldData);
+    }
+    
+    alert('Check browser console (F12) to see all data!');
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     initializeDOMElements();
@@ -1525,6 +1568,12 @@ function setupEventListeners() {
     
     if (closeAdminModalBtn) {
         closeAdminModalBtn.addEventListener('click', closeAdminModal);
+    }
+    
+    // Quick Admin Access Button
+    const quickAdminBtn = document.getElementById('quick-admin-btn');
+    if (quickAdminBtn) {
+        quickAdminBtn.addEventListener('click', quickAdminAccess);
     }
 }
 
