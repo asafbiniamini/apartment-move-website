@@ -1193,6 +1193,230 @@ function loadHighPriorityItems() {
     }
 }
 
+// Mission Checklist Functions
+function openMissionChecklistModal() {
+    const missionChecklistModal = document.getElementById('mission-checklist-modal');
+    if (missionChecklistModal) {
+        missionChecklistModal.classList.add('show');
+        loadMissionChecklist();
+    }
+}
+
+function closeMissionChecklistModal() {
+    const missionChecklistModal = document.getElementById('mission-checklist-modal');
+    if (missionChecklistModal) {
+        missionChecklistModal.classList.remove('show');
+    }
+}
+
+function loadMissionChecklist() {
+    const allItems = [];
+    const areaNames = {
+        kitchen: 'Kitchen',
+        bedroom: 'Bedroom',
+        living: 'Living Room',
+        bathroom: 'Bathroom',
+        garden: 'Garden',
+        office: 'Office'
+    };
+    
+    // Collect all items from all areas
+    Object.keys(items).forEach(area => {
+        const areaItems = items[area];
+        areaItems.forEach(item => {
+            allItems.push({
+                ...item,
+                area: area,
+                areaName: areaNames[area]
+            });
+        });
+    });
+    
+    // Sort items by priority (3 stars first, then 2, then 1)
+    allItems.sort((a, b) => {
+        const priorityA = a.priority || 1;
+        const priorityB = b.priority || 1;
+        return priorityB - priorityA; // Higher priority first
+    });
+    
+    // Update summary stats
+    const totalTasksCount = document.getElementById('total-tasks-count');
+    const completedTasksCount = document.getElementById('completed-tasks-count');
+    const remainingTasksCount = document.getElementById('remaining-tasks-count');
+    const checklistTbody = document.getElementById('checklist-tbody');
+    
+    if (totalTasksCount) {
+        totalTasksCount.textContent = allItems.length;
+    }
+    
+    if (completedTasksCount) {
+        const completedCount = allItems.filter(item => item.completed).length;
+        completedTasksCount.textContent = completedCount;
+    }
+    
+    if (remainingTasksCount) {
+        const remainingCount = allItems.filter(item => !item.completed).length;
+        remainingTasksCount.textContent = remainingCount;
+    }
+    
+    if (checklistTbody) {
+        if (allItems.length === 0) {
+            checklistTbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                        <i class="fas fa-clipboard-list" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        <h3>No Tasks Yet</h3>
+                        <p>Add some items to your areas to see them here!</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            checklistTbody.innerHTML = allItems.map((item, index) => {
+                // Generate a random deadline (for demo purposes)
+                const today = new Date();
+                const deadline = new Date(today.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000);
+                const deadlineStr = deadline.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                
+                return `
+                    <tr class="${item.completed ? 'completed' : ''}" data-id="${item.id}" data-area="${item.area}">
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td><i class="fas fa-map-marker-alt"></i> ${item.areaName}</td>
+                        <td>₪${item.price.toFixed(2)}</td>
+                        <td>${deadlineStr}</td>
+                        <td>
+                            <span class="status-badge ${item.completed ? 'completed' : 'pending'}" onclick="toggleComplete('${item.id}')">
+                                ${item.completed ? '✓ Completed' : '⏳ Pending'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+}
+
+function downloadMissionChecklistPDF() {
+    // Check if jsPDF is available
+    if (typeof window.jsPDF === 'undefined') {
+        showNotification('PDF library not loaded. Please refresh the page and try again.', 'error');
+        return;
+    }
+    
+    const allItems = [];
+    const areaNames = {
+        kitchen: 'Kitchen',
+        bedroom: 'Bedroom',
+        living: 'Living Room',
+        bathroom: 'Bathroom',
+        garden: 'Garden',
+        office: 'Office'
+    };
+    
+    // Collect all items from all areas
+    Object.keys(items).forEach(area => {
+        const areaItems = items[area];
+        areaItems.forEach(item => {
+            allItems.push({
+                ...item,
+                area: area,
+                areaName: areaNames[area]
+            });
+        });
+    });
+    
+    // Sort items by priority
+    allItems.sort((a, b) => {
+        const priorityA = a.priority || 1;
+        const priorityB = b.priority || 1;
+        return priorityB - priorityA;
+    });
+    
+    // Create PDF
+    const { jsPDF } = window.jsPDF;
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Mission Checklist - Apartment Move', 20, 30);
+    
+    // Add date
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    const today = new Date();
+    doc.text(`Generated on: ${today.toLocaleDateString()}`, 20, 40);
+    
+    // Add summary
+    const totalTasks = allItems.length;
+    const completedTasks = allItems.filter(item => item.completed).length;
+    const remainingTasks = totalTasks - completedTasks;
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Summary:', 20, 55);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Total Tasks: ${totalTasks}`, 20, 65);
+    doc.text(`Completed: ${completedTasks}`, 20, 75);
+    doc.text(`Remaining: ${remainingTasks}`, 20, 85);
+    
+    // Prepare table data
+    const tableData = allItems.map((item, index) => {
+        const today = new Date();
+        const deadline = new Date(today.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000);
+        const deadlineStr = deadline.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            year: 'numeric'
+        });
+        
+        return [
+            (index + 1).toString(),
+            item.name,
+            item.areaName,
+            `₪${item.price.toFixed(2)}`,
+            deadlineStr,
+            item.completed ? 'Completed' : 'Pending'
+        ];
+    });
+    
+    // Add table
+    doc.autoTable({
+        startY: 100,
+        head: [['#', 'Description', 'Area', 'Price', 'Deadline', 'Status']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [23, 162, 184],
+            textColor: 255,
+            fontStyle: 'bold'
+        },
+        styles: {
+            fontSize: 10,
+            cellPadding: 5
+        },
+        columnStyles: {
+            0: { cellWidth: 15 },
+            1: { cellWidth: 50 },
+            2: { cellWidth: 30 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 30 },
+            5: { cellWidth: 25 }
+        }
+    });
+    
+    // Save PDF
+    const fileName = `mission-checklist-${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}.pdf`;
+    doc.save(fileName);
+    
+    showNotification('Mission Checklist PDF downloaded successfully!', 'success');
+}
+
 // Admin Panel Functions
 function openAdminModal() {
     const adminModal = document.getElementById('admin-modal');
@@ -1579,7 +1803,7 @@ function setupEventListeners() {
         closeLoginModalBtn.addEventListener('click', hideLoginModal);
     }
     
-    // Tab switching for login/register
+    // Tab switching for login/register/admin
     const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -1594,6 +1818,11 @@ function setupEventListeners() {
                 form.classList.remove('active');
             });
             document.getElementById(`${tab}-form`).classList.add('active');
+            
+            // Re-setup password toggles after form switch
+            setTimeout(() => {
+                setupPasswordToggles();
+            }, 100);
         });
     });
     
@@ -1623,6 +1852,24 @@ function setupEventListeners() {
             moveItemToArea(targetArea);
         });
     });
+    
+    // Mission Checklist Event Listeners
+    const missionChecklistBtn = document.getElementById('mission-checklist-btn');
+    const closeMissionChecklistModalBtn = document.getElementById('close-mission-checklist-modal');
+    
+    if (missionChecklistBtn) {
+        missionChecklistBtn.addEventListener('click', openMissionChecklistModal);
+    }
+    
+    if (closeMissionChecklistModalBtn) {
+        closeMissionChecklistModalBtn.addEventListener('click', closeMissionChecklistModal);
+    }
+    
+    // Download PDF Button
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', downloadMissionChecklistPDF);
+    }
     
     // High Priority Items Event Listeners
     const highPriorityBtn = document.getElementById('high-priority-btn');
@@ -1691,6 +1938,50 @@ function setupEventListeners() {
             }
         });
     }
+    
+    // Setup password toggles function
+    function setupPasswordToggles() {
+        // Password Toggle for Login
+        const loginPasswordToggle = document.getElementById('login-password-toggle');
+        if (loginPasswordToggle) {
+            loginPasswordToggle.addEventListener('click', function() {
+                const passwordInput = document.getElementById('login-password');
+                const icon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                    this.classList.add('show-password');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.className = 'fas fa-eye';
+                    this.classList.remove('show-password');
+                }
+            });
+        }
+        
+        // Password Toggle for Admin
+        const adminPasswordToggle = document.getElementById('admin-password-toggle');
+        if (adminPasswordToggle) {
+            adminPasswordToggle.addEventListener('click', function() {
+                const passwordInput = document.getElementById('admin-password');
+                const icon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                    this.classList.add('show-password');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.className = 'fas fa-eye';
+                    this.classList.remove('show-password');
+                }
+            });
+        }
+    }
+    
+    // Initial setup of password toggles
+    setupPasswordToggles();
 }
 
 // Area Navigation

@@ -1599,6 +1599,32 @@ body {
     margin-bottom: 15px;
 }
 
+.budget-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.mission-checklist-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mission-checklist-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(23, 162, 184, 0.4);
+}
+
 .high-priority-btn {
     background: linear-gradient(135deg, #dc3545, #c82333);
     color: white;
@@ -1813,6 +1839,174 @@ body {
 .high-priority-item .item-details {
     color: #4a5568;
     font-size: 0.95rem;
+}
+
+/* Mission Checklist Styles */
+.mission-checklist-content {
+    padding: 20px 0;
+}
+
+.checklist-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 10px;
+    border-left: 4px solid #17a2b8;
+}
+
+.checklist-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.download-pdf-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.download-pdf-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
+.checklist-stat {
+    text-align: center;
+}
+
+.checklist-stat .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.checklist-stat .stat-value {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #17a2b8;
+}
+
+.checklist-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.checklist-table thead {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.checklist-table th {
+    padding: 15px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid #138496;
+}
+
+.checklist-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.checklist-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: scale(1.01);
+}
+
+.checklist-table tbody tr.completed {
+    background: #f8f9fa;
+    opacity: 0.7;
+}
+
+.checklist-table tbody tr.completed td {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.checklist-table td {
+    padding: 12px 10px;
+    font-size: 0.9rem;
+}
+
+.checklist-table td:first-child {
+    font-weight: 600;
+    color: #17a2b8;
+    text-align: center;
+    width: 50px;
+}
+
+.checklist-table td:nth-child(2) {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.checklist-table td:nth-child(3) {
+    color: #6c757d;
+}
+
+.checklist-table td:nth-child(4) {
+    color: #17a2b8;
+    font-weight: 600;
+}
+
+.checklist-table td:nth-child(5) {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.checklist-table td:last-child {
+    text-align: center;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.completed {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge:hover {
+    transform: scale(1.05);
 }
 
 /* Admin Panel Styles */
