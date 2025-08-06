@@ -838,18 +838,53 @@ function hideUserInterface() {
 
 function handleLogin(e) {
     e.preventDefault();
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value.trim();
     
+    if (!username || !password) {
+        showNotification('Please enter both username and password', 'error');
+        return;
+    }
+    
+    // Check for default admin credentials
+    if (username === 'Asaf' && password === 'Eden') {
+        currentUser = { username: 'Asaf Eden' };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Ensure admin user exists in users list
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (!users['Asaf Eden']) {
+            users['Asaf Eden'] = { password: 'Eden' };
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        
+        // Load user data
+        loadUserData();
+        
+        // Hide login modal and show user interface
+        hideLoginModal();
+        showUserInterface();
+        
+        showNotification(`Welcome back, Asaf Eden!`, 'success');
+        return;
+    }
+    
+    // Get users from localStorage
     const users = JSON.parse(localStorage.getItem('users') || '{}');
     
+    // Check if user exists and password matches
     if (users[username] && users[username].password === password) {
         currentUser = { username };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Load user data
+        loadUserData();
+        
+        // Hide login modal and show user interface
         hideLoginModal();
         showUserInterface();
-        loadUserData();
-        showNotification('Login successful!', 'success');
+        
+        showNotification(`Welcome back, ${username}!`, 'success');
     } else {
         showNotification('Invalid username or password', 'error');
     }
