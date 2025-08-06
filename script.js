@@ -1241,7 +1241,7 @@ function removeRoomImage() {
 function renderItems() {
     const areaItems = items[currentArea];
     
-    if (areaItems.length === 0) {
+    if (!areaItems || areaItems.length === 0) {
         itemsContainer.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-box-open"></i>
@@ -1252,7 +1252,14 @@ function renderItems() {
         return;
     }
 
-    itemsContainer.innerHTML = areaItems.map(item => {
+    // Sort items by priority (3 stars first, then 2, then 1)
+    const sortedItems = [...areaItems].sort((a, b) => {
+        const priorityA = a.priority || 1;
+        const priorityB = b.priority || 1;
+        return priorityB - priorityA; // Higher priority first
+    });
+
+    itemsContainer.innerHTML = sortedItems.map(item => {
         const priorityStars = '⭐'.repeat(item.priority || 1);
         const priorityClass = `priority-${item.priority || 1}`;
         
