@@ -139,6 +139,9 @@ function initializeDOMElements() {
 function openModal() {
     addItemModal.classList.add('show');
     document.getElementById('item-name').focus();
+    
+    // Initialize priority buttons
+    updatePriorityButtons('item-priority');
 }
 
 function closeModal() {
@@ -640,6 +643,41 @@ function closeQuickGuideModal() {
     quickGuideModal.classList.remove('show');
 }
 
+function setupPriorityButtons() {
+    // Add event listeners to all priority buttons
+    document.querySelectorAll('.priority-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const priority = parseInt(this.dataset.priority);
+            const formId = this.closest('form').id;
+            const priorityInput = document.getElementById(formId === 'add-item-form' ? 'item-priority' : 'edit-item-priority');
+            
+            // Update hidden input
+            priorityInput.value = priority;
+            
+            // Update button selection
+            updatePriorityButtons(priorityInput.id);
+        });
+    });
+}
+
+function updatePriorityButtons(priorityInputId) {
+    const priority = parseInt(document.getElementById(priorityInputId).value);
+    const form = document.getElementById(priorityInputId).closest('form');
+    
+    // Reset all buttons in this form
+    form.querySelectorAll('.priority-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        btn.dataset.selected = 'false';
+    });
+    
+    // Select the correct button
+    const selectedBtn = form.querySelector(`[data-priority="${priority}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('selected');
+        selectedBtn.dataset.selected = 'true';
+    }
+}
+
 function launchSweetHome3D() {
     // Ask user if they have Sweet Home 3D installed
     const hasSoftware = confirm('Do you have Sweet Home 3D installed on your computer?\n\nClick "OK" if you have it installed.\nClick "Cancel" to download it.');
@@ -686,6 +724,7 @@ function handleAddItem(e) {
         name: formData.get('item-name') || document.getElementById('item-name').value,
         size: formData.get('item-size') || document.getElementById('item-size').value,
         price: parseFloat(formData.get('item-price') || document.getElementById('item-price').value),
+        priority: parseInt(formData.get('item-priority') || document.getElementById('item-priority').value),
         notes: formData.get('item-notes') || document.getElementById('item-notes').value,
         url: formData.get('item-url') || document.getElementById('item-url').value,
         completed: false,
@@ -710,6 +749,7 @@ function handleEditItem(e) {
         item.name = document.getElementById('edit-item-name').value;
         item.size = document.getElementById('edit-item-size').value;
         item.price = parseFloat(document.getElementById('edit-item-price').value);
+        item.priority = parseInt(document.getElementById('edit-item-priority').value);
         item.notes = document.getElementById('edit-item-notes').value;
         item.url = document.getElementById('edit-item-url').value;
         
@@ -729,8 +769,12 @@ function openEditModal(itemId) {
         document.getElementById('edit-item-name').value = item.name;
         document.getElementById('edit-item-size').value = item.size || '';
         document.getElementById('edit-item-price').value = item.price;
+        document.getElementById('edit-item-priority').value = item.priority || 1;
         document.getElementById('edit-item-notes').value = item.notes || '';
         document.getElementById('edit-item-url').value = item.url || '';
+        
+        // Update priority button selection
+        updatePriorityButtons('edit-item-priority');
         
         editItemModal.classList.add('show');
         document.getElementById('edit-item-name').focus();
@@ -913,6 +957,9 @@ function setupEventListeners() {
             if (e.target === quickGuideModal) closeQuickGuideModal();
         });
     }
+    
+    // Priority Button Event Listeners
+    setupPriorityButtons();
 }
 
 // Area Navigation
@@ -1023,52 +1070,60 @@ function renderItems() {
         return;
     }
 
-    itemsContainer.innerHTML = areaItems.map(item => `
-        <div class="item-card ${item.completed ? 'completed' : ''}" data-id="${item.id}">
-            <div class="item-header">
-                <div class="item-name">${item.name}</div>
-                <div class="item-price">₪${item.price.toFixed(2)}</div>
-            </div>
-            <div class="item-details">
-                ${item.size ? `
+    itemsContainer.innerHTML = areaItems.map(item => {
+        const priorityStars = '⭐'.repeat(item.priority || 1);
+        const priorityClass = `priority-${item.priority || 1}`;
+        
+        return `
+            <div class="item-card ${item.completed ? 'completed' : ''}" data-id="${item.id}">
+                <div class="item-header">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">₪${item.price.toFixed(2)}</div>
+                </div>
+                <div class="item-details">
+                    <div class="item-priority ${priorityClass}">
+                        <i class="fas fa-star"></i> Priority: ${priorityStars}
+                    </div>
+                    ${item.size ? `
+                        <div class="item-detail">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span>${item.size}</span>
+                        </div>
+                    ` : ''}
                     <div class="item-detail">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>${item.size}</span>
+                        <i class="fas fa-calendar"></i>
+                        <span>Added: ${new Date(item.createdAt).toLocaleDateString()}</span>
+                    </div>
+                </div>
+                ${item.notes ? `
+                    <div class="item-notes">
+                        <i class="fas fa-sticky-note"></i>
+                        ${item.notes}
                     </div>
                 ` : ''}
-                <div class="item-detail">
-                    <i class="fas fa-calendar"></i>
-                    <span>Added: ${new Date(item.createdAt).toLocaleDateString()}</span>
+                ${item.url ? `
+                    <div class="item-url">
+                        <i class="fas fa-link"></i>
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer">View Product</a>
+                    </div>
+                ` : ''}
+                <div class="item-actions">
+                    <button class="action-btn edit-btn" onclick="openEditModal('${item.id}')">
+                        <i class="fas fa-edit"></i>
+                        Edit
+                    </button>
+                    <button class="action-btn complete-btn" onclick="toggleComplete('${item.id}')">
+                        <i class="fas ${item.completed ? 'fa-undo' : 'fa-check'}"></i>
+                        ${item.completed ? 'Undo' : 'Complete'}
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteItem('${item.id}')">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </button>
                 </div>
             </div>
-            ${item.notes ? `
-                <div class="item-notes">
-                    <i class="fas fa-sticky-note"></i>
-                    ${item.notes}
-                </div>
-            ` : ''}
-            ${item.url ? `
-                <div class="item-url">
-                    <i class="fas fa-link"></i>
-                    <a href="${item.url}" target="_blank" rel="noopener noreferrer">View Product</a>
-                </div>
-            ` : ''}
-            <div class="item-actions">
-                <button class="action-btn edit-btn" onclick="openEditModal('${item.id}')">
-                    <i class="fas fa-edit"></i>
-                    Edit
-                </button>
-                <button class="action-btn complete-btn" onclick="toggleComplete('${item.id}')">
-                    <i class="fas ${item.completed ? 'fa-undo' : 'fa-check'}"></i>
-                    ${item.completed ? 'Undo' : 'Complete'}
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteItem('${item.id}')">
-                    <i class="fas fa-trash"></i>
-                    Delete
-                </button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Toggle Item Completion

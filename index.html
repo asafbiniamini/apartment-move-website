@@ -116,6 +116,21 @@
                     <input type="number" id="item-price" min="0" step="0.01" required>
                 </div>
                 <div class="form-group">
+                    <label for="item-priority">Priority:</label>
+                    <div class="priority-selector">
+                        <button type="button" class="priority-btn" data-priority="1" data-selected="false">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button type="button" class="priority-btn" data-priority="2" data-selected="false">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </button>
+                        <button type="button" class="priority-btn" data-priority="3" data-selected="false">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" id="item-priority" value="1">
+                </div>
+                <div class="form-group">
                     <label for="item-notes">Notes:</label>
                     <textarea id="item-notes" rows="3" placeholder="Additional details, brand preferences, etc."></textarea>
                 </div>
@@ -153,6 +168,21 @@
                 <div class="form-group">
                     <label for="edit-item-price">Price (₪):</label>
                     <input type="number" id="edit-item-price" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-item-priority">Priority:</label>
+                    <div class="priority-selector">
+                        <button type="button" class="priority-btn" data-priority="1" data-selected="false">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button type="button" class="priority-btn" data-priority="2" data-selected="false">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </button>
+                        <button type="button" class="priority-btn" data-priority="3" data-selected="false">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" id="edit-item-priority" value="1">
                 </div>
                 <div class="form-group">
                     <label for="edit-item-notes">Notes:</label>

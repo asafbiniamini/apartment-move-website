@@ -824,6 +824,53 @@ body {
     box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
 }
 
+/* Priority Selector Styles */
+.priority-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.priority-btn {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.priority-btn:hover {
+    border-color: #ffb3ba;
+    background: #fff5f5;
+}
+
+.priority-btn.selected {
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    border-color: #c44569;
+    color: white;
+    transform: scale(1.05);
+}
+
+.priority-btn.selected:hover {
+    background: linear-gradient(135deg, #c44569, #ff6b9d);
+}
+
+/* Priority Display in Items */
+.item-priority {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.priority-1 { color: #28a745; }
+.priority-2 { color: #ffc107; }
+.priority-3 { color: #dc3545; }
+
 .form-actions {
     display: flex;
     gap: 15px;
