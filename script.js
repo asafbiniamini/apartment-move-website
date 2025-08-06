@@ -996,6 +996,89 @@ function moveItemToArea(targetArea) {
     }
 }
 
+// High Priority Items Functions
+function openHighPriorityModal() {
+    const highPriorityModal = document.getElementById('high-priority-modal');
+    if (highPriorityModal) {
+        highPriorityModal.classList.add('show');
+        loadHighPriorityItems();
+    }
+}
+
+function closeHighPriorityModal() {
+    const highPriorityModal = document.getElementById('high-priority-modal');
+    if (highPriorityModal) {
+        highPriorityModal.classList.remove('show');
+    }
+}
+
+function loadHighPriorityItems() {
+    const highPriorityItems = [];
+    const areaNames = {
+        kitchen: 'Kitchen',
+        bedroom: 'Bedroom',
+        living: 'Living Room',
+        bathroom: 'Bathroom',
+        garden: 'Garden',
+        office: 'Office'
+    };
+    
+    // Collect all high priority items (3 stars) from all areas
+    Object.keys(items).forEach(area => {
+        const areaItems = items[area].filter(item => (item.priority || 1) === 3);
+        areaItems.forEach(item => {
+            highPriorityItems.push({
+                ...item,
+                area: area,
+                areaName: areaNames[area]
+            });
+        });
+    });
+    
+    // Update summary stats
+    const highPriorityCount = document.getElementById('high-priority-count');
+    const highPriorityBudget = document.getElementById('high-priority-budget');
+    const highPriorityItemsContainer = document.getElementById('high-priority-items');
+    
+    if (highPriorityCount) {
+        highPriorityCount.textContent = highPriorityItems.length;
+    }
+    
+    if (highPriorityBudget) {
+        const totalBudget = highPriorityItems.reduce((sum, item) => sum + item.price, 0);
+        highPriorityBudget.textContent = `₪${totalBudget.toFixed(2)}`;
+    }
+    
+    if (highPriorityItemsContainer) {
+        if (highPriorityItems.length === 0) {
+            highPriorityItemsContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>No High Priority Items</h3>
+                    <p>Great! You have no urgent items to worry about.</p>
+                </div>
+            `;
+        } else {
+            highPriorityItemsContainer.innerHTML = highPriorityItems.map(item => `
+                <div class="high-priority-item">
+                    <div class="item-header">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">₪${item.price.toFixed(2)}</div>
+                    </div>
+                    <div class="item-area">
+                        <i class="fas fa-map-marker-alt"></i> ${item.areaName}
+                    </div>
+                    <div class="item-details">
+                        ${item.size ? `<div><i class="fas fa-ruler"></i> ${item.size}</div>` : ''}
+                        ${item.notes ? `<div><i class="fas fa-sticky-note"></i> ${item.notes}</div>` : ''}
+                        ${item.url ? `<div><i class="fas fa-link"></i> <a href="${item.url}" target="_blank">View Product</a></div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     initializeDOMElements();
@@ -1240,6 +1323,18 @@ function setupEventListeners() {
             moveItemToArea(targetArea);
         });
     });
+    
+    // High Priority Items Event Listeners
+    const highPriorityBtn = document.getElementById('high-priority-btn');
+    const closeHighPriorityModalBtn = document.getElementById('close-high-priority-modal');
+    
+    if (highPriorityBtn) {
+        highPriorityBtn.addEventListener('click', openHighPriorityModal);
+    }
+    
+    if (closeHighPriorityModalBtn) {
+        closeHighPriorityModalBtn.addEventListener('click', closeHighPriorityModal);
+    }
 }
 
 // Area Navigation

@@ -1498,6 +1498,33 @@ body {
     font-size: 1.2rem;
 }
 
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.high-priority-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.high-priority-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
 .overall-budget-summary h3 i {
     color: #28a745;
 }
@@ -1607,4 +1634,89 @@ body {
 
 .move-btn:hover {
     background: linear-gradient(135deg, #138496, #17a2b8);
+}
+
+/* High Priority Items Modal Styles */
+.high-priority-content {
+    padding: 20px 0;
+}
+
+.priority-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff5f5, #fed7d7);
+    border-radius: 10px;
+    border-left: 4px solid #dc3545;
+}
+
+.priority-stat {
+    text-align: center;
+}
+
+.priority-stat .stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.priority-stat .stat-value {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #dc3545;
+}
+
+.high-priority-items {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.high-priority-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid #dc3545;
+    transition: all 0.3s ease;
+}
+
+.high-priority-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.high-priority-item .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.high-priority-item .item-name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 1.1rem;
+}
+
+.high-priority-item .item-price {
+    background: #dc3545;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.high-priority-item .item-area {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.high-priority-item .item-details {
+    color: #4a5568;
+    font-size: 0.95rem;
 } 

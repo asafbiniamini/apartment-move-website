@@ -26,7 +26,12 @@
 
         <!-- Overall Budget Summary -->
         <div class="overall-budget-summary" id="overall-budget-summary" style="display: none;">
-            <h3><i class="fas fa-calculator"></i> Overall Budget Summary</h3>
+            <div class="budget-header">
+                <h3><i class="fas fa-calculator"></i> Overall Budget Summary</h3>
+                <button class="high-priority-btn" id="high-priority-btn">
+                    <i class="fas fa-exclamation-triangle"></i> High Priority Items
+                </button>
+            </div>
             <div class="budget-breakdown">
                 <div class="budget-item">
                     <span class="area-name">Kitchen:</span>
@@ -462,6 +467,33 @@
                         <button type="submit" class="btn-primary">Register</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- High Priority Items Modal -->
+    <div class="modal" id="high-priority-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> High Priority Items (3 Stars)</h3>
+                <button class="close-btn" id="close-high-priority-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="high-priority-content">
+                <div class="priority-summary">
+                    <div class="priority-stat">
+                        <span class="stat-label">Total High Priority:</span>
+                        <span class="stat-value" id="high-priority-count">0</span>
+                    </div>
+                    <div class="priority-stat">
+                        <span class="stat-label">Total Budget:</span>
+                        <span class="stat-value" id="high-priority-budget">₪0</span>
+                    </div>
+                </div>
+                <div class="high-priority-items" id="high-priority-items">
+                    <!-- High priority items will be displayed here -->
+                </div>
             </div>
         </div>
     </div>
