@@ -813,6 +813,7 @@ function showUserInterface() {
     const currentUserSpan = document.getElementById('current-user');
     const budgetSummary = document.getElementById('overall-budget-summary');
     const adminBtn = document.getElementById('admin-btn');
+    const loginActions = document.getElementById('login-actions');
     
     if (userInfo && currentUserSpan) {
         userInfo.style.display = 'flex';
@@ -823,6 +824,10 @@ function showUserInterface() {
         budgetSummary.style.display = 'block';
     }
     
+    if (loginActions) {
+        loginActions.style.display = 'none';
+    }
+    
     // Show admin button for Asaf Eden (admin)
     if (adminBtn && currentUser.username === 'Asaf Eden') {
         adminBtn.style.display = 'flex';
@@ -831,8 +836,24 @@ function showUserInterface() {
 
 function hideUserInterface() {
     const userInfo = document.getElementById('user-info');
+    const budgetSummary = document.getElementById('overall-budget-summary');
+    const adminBtn = document.getElementById('admin-btn');
+    const loginActions = document.getElementById('login-actions');
+    
     if (userInfo) {
         userInfo.style.display = 'none';
+    }
+    
+    if (budgetSummary) {
+        budgetSummary.style.display = 'none';
+    }
+    
+    if (adminBtn) {
+        adminBtn.style.display = 'none';
+    }
+    
+    if (loginActions) {
+        loginActions.style.display = 'flex';
     }
 }
 
@@ -1574,6 +1595,25 @@ function setupEventListeners() {
     const quickAdminBtn = document.getElementById('quick-admin-btn');
     if (quickAdminBtn) {
         quickAdminBtn.addEventListener('click', quickAdminAccess);
+    }
+    
+    // Password Toggle
+    const loginPasswordToggle = document.getElementById('login-password-toggle');
+    if (loginPasswordToggle) {
+        loginPasswordToggle.addEventListener('click', function() {
+            const passwordInput = document.getElementById('login-password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+                this.classList.add('show-password');
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fas fa-eye';
+                this.classList.remove('show-password');
+            }
+        });
     }
 }
 
