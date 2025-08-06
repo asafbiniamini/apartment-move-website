@@ -17,6 +17,9 @@
                 <p class="subtitle">Planning our new home together</p>
                 <div class="user-info" id="user-info" style="display: none;">
                     <span id="current-user">Welcome!</span>
+                    <button class="admin-btn" id="admin-btn" style="display: none;">
+                        <i class="fas fa-users-cog"></i> Admin Panel
+                    </button>
                     <button class="logout-btn" id="logout-btn">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
@@ -467,6 +470,37 @@
                         <button type="submit" class="btn-primary">Register</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal" id="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-users-cog"></i> Admin Panel</h3>
+                <button class="close-btn" id="close-admin-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="admin-content">
+                <div class="admin-summary">
+                    <div class="admin-stat">
+                        <span class="stat-label">Total Users:</span>
+                        <span class="stat-value" id="total-users-count">0</span>
+                    </div>
+                    <div class="admin-stat">
+                        <span class="stat-label">Total Items:</span>
+                        <span class="stat-value" id="total-items-count">0</span>
+                    </div>
+                    <div class="admin-stat">
+                        <span class="stat-label">Total Budget:</span>
+                        <span class="stat-value" id="total-budget-sum">₪0</span>
+                    </div>
+                </div>
+                <div class="users-list" id="users-list">
+                    <!-- Users will be displayed here -->
+                </div>
             </div>
         </div>
     </div>

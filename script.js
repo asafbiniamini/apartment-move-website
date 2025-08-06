@@ -812,6 +812,7 @@ function showUserInterface() {
     const userInfo = document.getElementById('user-info');
     const currentUserSpan = document.getElementById('current-user');
     const budgetSummary = document.getElementById('overall-budget-summary');
+    const adminBtn = document.getElementById('admin-btn');
     
     if (userInfo && currentUserSpan) {
         userInfo.style.display = 'flex';
@@ -820,6 +821,11 @@ function showUserInterface() {
     
     if (budgetSummary) {
         budgetSummary.style.display = 'block';
+    }
+    
+    // Show admin button for Asaf Eden (admin)
+    if (adminBtn && currentUser.username === 'Asaf Eden') {
+        adminBtn.style.display = 'flex';
     }
 }
 
@@ -1079,6 +1085,144 @@ function loadHighPriorityItems() {
     }
 }
 
+// Admin Panel Functions
+function openAdminModal() {
+    const adminModal = document.getElementById('admin-modal');
+    if (adminModal) {
+        adminModal.classList.add('show');
+        loadAdminData();
+    }
+}
+
+function closeAdminModal() {
+    const adminModal = document.getElementById('admin-modal');
+    if (adminModal) {
+        adminModal.classList.remove('show');
+    }
+}
+
+function loadAdminData() {
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    const userList = [];
+    let totalItems = 0;
+    let totalBudget = 0;
+    
+    // Collect data for each user
+    Object.keys(users).forEach(username => {
+        const userData = localStorage.getItem(`userData_${username}`);
+        if (userData) {
+            const userItems = JSON.parse(userData);
+            let userItemCount = 0;
+            let userBudget = 0;
+            
+            // Count items and budget for this user
+            Object.keys(userItems).forEach(area => {
+                userItemCount += userItems[area].length;
+                userBudget += userItems[area].reduce((sum, item) => sum + item.price, 0);
+            });
+            
+            userList.push({
+                username,
+                itemCount: userItemCount,
+                budget: userBudget
+            });
+            
+            totalItems += userItemCount;
+            totalBudget += userBudget;
+        }
+    });
+    
+    // Update admin summary
+    const totalUsersCount = document.getElementById('total-users-count');
+    const totalItemsCount = document.getElementById('total-items-count');
+    const totalBudgetSum = document.getElementById('total-budget-sum');
+    const usersListContainer = document.getElementById('users-list');
+    
+    if (totalUsersCount) {
+        totalUsersCount.textContent = userList.length;
+    }
+    
+    if (totalItemsCount) {
+        totalItemsCount.textContent = totalItems;
+    }
+    
+    if (totalBudgetSum) {
+        totalBudgetSum.textContent = `₪${totalBudget.toFixed(2)}`;
+    }
+    
+    if (usersListContainer) {
+        if (userList.length === 0) {
+            usersListContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>No Users Yet</h3>
+                    <p>No users have registered yet.</p>
+                </div>
+            `;
+        } else {
+            usersListContainer.innerHTML = userList.map(user => `
+                <div class="user-item">
+                    <div class="user-header">
+                        <div class="user-name">${user.username}</div>
+                        <div class="user-stats">
+                            <span><i class="fas fa-box"></i> ${user.itemCount} items</span>
+                            <span><i class="fas fa-shekel-sign"></i> ₪${user.budget.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="view-user-btn" onclick="viewUserData('${user.username}')">
+                            <i class="fas fa-eye"></i> View User Data
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+function viewUserData(username) {
+    // Store the username to view
+    localStorage.setItem('viewingUser', username);
+    
+    // Logout current user and login as the selected user
+    currentUser = { username };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Close admin modal
+    closeAdminModal();
+    
+    // Load the user's data
+    loadUserData();
+    
+    // Show notification
+    showNotification(`Now viewing ${username}'s data`, 'info');
+    
+    // Add back to admin button if viewing as admin
+    const adminBtn = document.getElementById('admin-btn');
+    if (adminBtn && username !== 'Asaf Eden') {
+        adminBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Admin';
+        adminBtn.onclick = backToAdmin;
+    }
+}
+
+function backToAdmin() {
+    // Restore admin user
+    currentUser = { username: 'Asaf Eden' };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Load admin data
+    loadUserData();
+    
+    // Restore admin button
+    const adminBtn = document.getElementById('admin-btn');
+    if (adminBtn) {
+        adminBtn.innerHTML = '<i class="fas fa-users-cog"></i> Admin Panel';
+        adminBtn.onclick = openAdminModal;
+    }
+    
+    showNotification('Back to admin view', 'info');
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     initializeDOMElements();
@@ -1334,6 +1478,18 @@ function setupEventListeners() {
     
     if (closeHighPriorityModalBtn) {
         closeHighPriorityModalBtn.addEventListener('click', closeHighPriorityModal);
+    }
+    
+    // Admin Panel Event Listeners
+    const adminBtn = document.getElementById('admin-btn');
+    const closeAdminModalBtn = document.getElementById('close-admin-modal');
+    
+    if (adminBtn) {
+        adminBtn.addEventListener('click', openAdminModal);
+    }
+    
+    if (closeAdminModalBtn) {
+        closeAdminModalBtn.addEventListener('click', closeAdminModal);
     }
 }
 
