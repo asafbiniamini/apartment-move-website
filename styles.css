@@ -1553,4 +1553,58 @@ body {
 .budget-item.total .area-budget {
     color: white;
     font-size: 1.2rem;
+}
+
+/* Move Item Modal Styles */
+.move-content {
+    padding: 20px 0;
+}
+
+.move-content p {
+    color: #4a5568;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.area-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.area-option {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.area-option:hover {
+    border-color: #ff6b9d;
+    background: #fff5f5;
+    transform: translateY(-2px);
+}
+
+.area-option.selected {
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    border-color: #c44569;
+    color: white;
+}
+
+.move-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.move-btn:hover {
+    background: linear-gradient(135deg, #138496, #17a2b8);
 } 

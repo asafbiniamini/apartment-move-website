@@ -811,10 +811,15 @@ function hideLoginModal() {
 function showUserInterface() {
     const userInfo = document.getElementById('user-info');
     const currentUserSpan = document.getElementById('current-user');
+    const budgetSummary = document.getElementById('overall-budget-summary');
     
     if (userInfo && currentUserSpan) {
         userInfo.style.display = 'flex';
         currentUserSpan.textContent = `Welcome, ${currentUser.username}!`;
+    }
+    
+    if (budgetSummary) {
+        budgetSummary.style.display = 'block';
     }
 }
 
@@ -922,6 +927,72 @@ function migrateOldData() {
 function saveUserData() {
     if (currentUser) {
         localStorage.setItem(`userData_${currentUser.username}`, JSON.stringify(items));
+    }
+}
+
+// Move Item Functions
+let itemToMove = null;
+
+function openMoveModal(itemId) {
+    const item = items[currentArea].find(item => item.id === itemId);
+    if (item) {
+        itemToMove = item;
+        const moveItemName = document.getElementById('move-item-name');
+        if (moveItemName) {
+            moveItemName.textContent = item.name;
+        }
+        
+        const moveModal = document.getElementById('move-item-modal');
+        if (moveModal) {
+            moveModal.classList.add('show');
+        }
+        
+        // Reset area selection
+        document.querySelectorAll('.area-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+    }
+}
+
+function closeMoveModal() {
+    const moveModal = document.getElementById('move-item-modal');
+    if (moveModal) {
+        moveModal.classList.remove('show');
+    }
+    itemToMove = null;
+}
+
+function moveItemToArea(targetArea) {
+    if (itemToMove && targetArea !== currentArea) {
+        // Remove from current area
+        items[currentArea] = items[currentArea].filter(item => item.id !== itemToMove.id);
+        
+        // Add to target area
+        items[targetArea].push(itemToMove);
+        
+        // Save data
+        saveUserData();
+        
+        // Update display
+        renderItems();
+        updateStats();
+        
+        // Close modal
+        closeMoveModal();
+        
+        // Show success message
+        const areaNames = {
+            kitchen: 'Kitchen',
+            bedroom: 'Bedroom',
+            living: 'Living Room',
+            bathroom: 'Bathroom',
+            garden: 'Garden',
+            office: 'Office'
+        };
+        
+        showNotification(`"${itemToMove.name}" moved to ${areaNames[targetArea]}!`, 'success');
+    } else if (targetArea === currentArea) {
+        showNotification('Item is already in this area!', 'warning');
     }
 }
 
@@ -1142,6 +1213,33 @@ function setupEventListeners() {
             document.getElementById(`${tab}-form`).classList.add('active');
         });
     });
+    
+    // Move Item Modal Event Listeners
+    const closeMoveModalBtn = document.getElementById('close-move-modal');
+    const cancelMoveBtn = document.getElementById('cancel-move');
+    
+    if (closeMoveModalBtn) {
+        closeMoveModalBtn.addEventListener('click', closeMoveModal);
+    }
+    
+    if (cancelMoveBtn) {
+        cancelMoveBtn.addEventListener('click', closeMoveModal);
+    }
+    
+    // Area selection for moving items
+    const areaOptions = document.querySelectorAll('.area-option');
+    areaOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const targetArea = this.dataset.area;
+            
+            // Update selection
+            areaOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Move the item
+            moveItemToArea(targetArea);
+        });
+    });
 }
 
 // Area Navigation
@@ -1297,6 +1395,10 @@ function renderItems() {
                     </div>
                 ` : ''}
                 <div class="item-actions">
+                    <button class="action-btn move-btn" onclick="openMoveModal('${item.id}')">
+                        <i class="fas fa-exchange-alt"></i>
+                        Move
+                    </button>
                     <button class="action-btn edit-btn" onclick="openEditModal('${item.id}')">
                         <i class="fas fa-edit"></i>
                         Edit

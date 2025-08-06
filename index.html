@@ -24,6 +24,41 @@
             </div>
         </header>
 
+        <!-- Overall Budget Summary -->
+        <div class="overall-budget-summary" id="overall-budget-summary" style="display: none;">
+            <h3><i class="fas fa-calculator"></i> Overall Budget Summary</h3>
+            <div class="budget-breakdown">
+                <div class="budget-item">
+                    <span class="area-name">Kitchen:</span>
+                    <span class="area-budget" id="kitchen-budget">₪0</span>
+                </div>
+                <div class="budget-item">
+                    <span class="area-name">Bedroom:</span>
+                    <span class="area-budget" id="bedroom-budget">₪0</span>
+                </div>
+                <div class="budget-item">
+                    <span class="area-name">Living Room:</span>
+                    <span class="area-budget" id="living-budget">₪0</span>
+                </div>
+                <div class="budget-item">
+                    <span class="area-name">Bathroom:</span>
+                    <span class="area-budget" id="bathroom-budget">₪0</span>
+                </div>
+                <div class="budget-item">
+                    <span class="area-name">Garden:</span>
+                    <span class="area-budget" id="garden-budget">₪0</span>
+                </div>
+                <div class="budget-item">
+                    <span class="area-name">Office:</span>
+                    <span class="area-budget" id="office-budget">₪0</span>
+                </div>
+                <div class="budget-item total">
+                    <span class="area-name">TOTAL:</span>
+                    <span class="area-budget" id="overall-total-budget">₪0</span>
+                </div>
+            </div>
+        </div>
+
         <nav class="navigation">
             <div class="nav-container">
                 <button class="nav-btn active" data-area="kitchen">
@@ -90,41 +125,6 @@
                 <div class="stat">
                     <span class="stat-label">Completed:</span>
                     <span class="stat-value" id="completed-items">0</span>
-                </div>
-            </div>
-            
-            <!-- Overall Budget Summary -->
-            <div class="overall-budget-summary">
-                <h3><i class="fas fa-calculator"></i> Overall Budget Summary</h3>
-                <div class="budget-breakdown">
-                    <div class="budget-item">
-                        <span class="area-name">Kitchen:</span>
-                        <span class="area-budget" id="kitchen-budget">₪0</span>
-                    </div>
-                    <div class="budget-item">
-                        <span class="area-name">Bedroom:</span>
-                        <span class="area-budget" id="bedroom-budget">₪0</span>
-                    </div>
-                    <div class="budget-item">
-                        <span class="area-name">Living Room:</span>
-                        <span class="area-budget" id="living-budget">₪0</span>
-                    </div>
-                    <div class="budget-item">
-                        <span class="area-name">Bathroom:</span>
-                        <span class="area-budget" id="bathroom-budget">₪0</span>
-                    </div>
-                    <div class="budget-item">
-                        <span class="area-name">Garden:</span>
-                        <span class="area-budget" id="garden-budget">₪0</span>
-                    </div>
-                    <div class="budget-item">
-                        <span class="area-name">Office:</span>
-                        <span class="area-budget" id="office-budget">₪0</span>
-                    </div>
-                    <div class="budget-item total">
-                        <span class="area-name">TOTAL:</span>
-                        <span class="area-budget" id="overall-total-budget">₪0</span>
-                    </div>
                 </div>
             </div>
 
@@ -462,6 +462,44 @@
                         <button type="submit" class="btn-primary">Register</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Item Modal -->
+    <div class="modal" id="move-item-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Move Item</h3>
+                <button class="close-btn" id="close-move-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="move-content">
+                <p>Move "<span id="move-item-name"></span>" to:</p>
+                <div class="area-selection">
+                    <button class="area-option" data-area="kitchen">
+                        <i class="fas fa-utensils"></i> Kitchen
+                    </button>
+                    <button class="area-option" data-area="bedroom">
+                        <i class="fas fa-bed"></i> Bedroom
+                    </button>
+                    <button class="area-option" data-area="living">
+                        <i class="fas fa-couch"></i> Living Room
+                    </button>
+                    <button class="area-option" data-area="bathroom">
+                        <i class="fas fa-bath"></i> Bathroom
+                    </button>
+                    <button class="area-option" data-area="garden">
+                        <i class="fas fa-seedling"></i> Garden
+                    </button>
+                    <button class="area-option" data-area="office">
+                        <i class="fas fa-laptop"></i> Office
+                    </button>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-move">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
