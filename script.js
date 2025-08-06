@@ -1375,10 +1375,12 @@ function updateMissionPriorityButtons(priority) {
 
 function downloadMissionChecklistPDF() {
     // Check if jsPDF is available
-    if (typeof window.jsPDF === 'undefined') {
+    if (typeof jsPDF === 'undefined') {
         showNotification('PDF library not loaded. Please refresh the page and try again.', 'error');
         return;
     }
+    
+    try {
     
     // Load missions
     const userMissions = localStorage.getItem(`missions_${currentUser.username}`) || '[]';
@@ -1392,7 +1394,6 @@ function downloadMissionChecklistPDF() {
     });
     
     // Create PDF
-    const { jsPDF } = window.jsPDF;
     const doc = new jsPDF();
     
     // Add title
@@ -1469,6 +1470,10 @@ function downloadMissionChecklistPDF() {
     doc.save(fileName);
     
     showNotification('Mission Checklist PDF downloaded successfully!', 'success');
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        showNotification('Error generating PDF. Please try again.', 'error');
+    }
 }
 
 // Admin Panel Functions

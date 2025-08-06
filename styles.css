@@ -459,6 +459,11 @@ body {
     max-height: 800px;
 }
 
+/* Higher z-index for add mission modal */
+#add-mission-modal {
+    z-index: 2000;
+}
+
 .room-modal-content {
     max-width: 95vw;
     max-height: 95vh;

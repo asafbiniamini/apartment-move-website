@@ -790,6 +790,18 @@
     <script src="https://unpkg.com/photo-sphere-viewer@4.0.5/dist/photo-sphere-viewer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        // Make jsPDF globally available
+        window.jsPDF = window.jsPDF || {};
+        // Wait for libraries to load
+        window.addEventListener('load', function() {
+            if (typeof jsPDF !== 'undefined') {
+                console.log('PDF library loaded successfully');
+            } else {
+                console.log('PDF library not loaded');
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html> 
