@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Apartment Move Planner</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/photo-sphere-viewer@4.0.5/dist/photo-sphere-viewer.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-home"></i> Our Apartment Move</h1>
+                <p class="subtitle">Planning our new home together</p>
+            </div>
+        </header>
+
+        <nav class="navigation">
+            <div class="nav-container">
+                <button class="nav-btn active" data-area="kitchen">
+                    <i class="fas fa-utensils"></i>
+                    <span>Kitchen</span>
+                </button>
+                <button class="nav-btn" data-area="bedroom">
+                    <i class="fas fa-bed"></i>
+                    <span>Bedroom</span>
+                </button>
+                <button class="nav-btn" data-area="living">
+                    <i class="fas fa-couch"></i>
+                    <span>Living Room</span>
+                </button>
+                <button class="nav-btn" data-area="bathroom">
+                    <i class="fas fa-bath"></i>
+                    <span>Bathroom</span>
+                </button>
+                <button class="nav-btn" data-area="garden">
+                    <i class="fas fa-seedling"></i>
+                    <span>Garden</span>
+                </button>
+                <button class="nav-btn" data-area="office">
+                    <i class="fas fa-laptop"></i>
+                    <span>Office</span>
+                </button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="area-header">
+                <h2 id="area-title">Kitchen</h2>
+                <div class="area-actions">
+                    <button class="upload-pictures-btn" id="upload-pictures-btn">
+                        <i class="fas fa-upload"></i> Upload Pictures
+                    </button>
+                    <button class="view-room-btn" id="view-room-btn">
+                        <i class="fas fa-eye"></i> View Room
+                    </button>
+                    <button class="design-room-btn" id="design-room-btn">
+                        <i class="fas fa-pencil-ruler"></i> Design Room
+                    </button>
+                    <button class="quick-guide-btn" id="quick-guide-btn">
+                        <i class="fas fa-book"></i> Quick Guide
+                    </button>
+                    <button class="create-panorama-btn" id="create-panorama-btn">
+                        <i class="fas fa-globe"></i> Create 360°
+                    </button>
+                    <button class="add-item-btn" id="add-item-btn">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <span class="stat-label">Total Items:</span>
+                    <span class="stat-value" id="total-items">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total Budget:</span>
+                    <span class="stat-value" id="total-budget">₪0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Completed:</span>
+                    <span class="stat-value" id="completed-items">0</span>
+                </div>
+            </div>
+
+            <div class="items-container" id="items-container">
+                <!-- Items will be dynamically added here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal" id="add-item-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Item</h3>
+                <button class="close-btn" id="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="add-item-form">
+                <div class="form-group">
+                    <label for="item-name">Item Name:</label>
+                    <input type="text" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-size">Size/Dimensions:</label>
+                    <input type="text" id="item-size" placeholder="e.g., 120cm x 60cm">
+                </div>
+                <div class="form-group">
+                    <label for="item-price">Price (₪):</label>
+                    <input type="number" id="item-price" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-notes">Notes:</label>
+                    <textarea id="item-notes" rows="3" placeholder="Additional details, brand preferences, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="item-url">Website Link:</label>
+                    <input type="url" id="item-url" placeholder="https://example.com/product">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-add">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div class="modal" id="edit-item-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Item</h3>
+                <button class="close-btn" id="close-edit-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="edit-item-form">
+                <input type="hidden" id="edit-item-id">
+                <div class="form-group">
+                    <label for="edit-item-name">Item Name:</label>
+                    <input type="text" id="edit-item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-item-size">Size/Dimensions:</label>
+                    <input type="text" id="edit-item-size" placeholder="e.g., 120cm x 60cm">
+                </div>
+                <div class="form-group">
+                    <label for="edit-item-price">Price (₪):</label>
+                    <input type="number" id="edit-item-price" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-item-notes">Notes:</label>
+                    <textarea id="edit-item-notes" rows="3" placeholder="Additional details, brand preferences, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-item-url">Website Link:</label>
+                    <input type="url" id="edit-item-url" placeholder="https://example.com/product">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-edit">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Pictures Modal -->
+    <div class="modal" id="upload-pictures-modal">
+        <div class="modal-content room-modal-content">
+            <div class="modal-header">
+                <h3 id="upload-modal-title">Upload Pictures - Kitchen</h3>
+                <button class="close-btn" id="close-upload-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="upload-section">
+                <div class="upload-area">
+                    <input type="file" id="multiple-images-input" accept="image/*" multiple style="display: none;">
+                    <button class="upload-btn" onclick="document.getElementById('multiple-images-input').click()">
+                        <i class="fas fa-cloud-upload-alt"></i> Select Multiple Images
+                    </button>
+                    <p class="upload-hint">You can select multiple images at once</p>
+                </div>
+                <div class="image-gallery" id="image-gallery">
+                    <!-- Uploaded images will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Room Modal -->
+    <div class="modal" id="view-room-modal">
+        <div class="modal-content room-modal-content">
+            <div class="modal-header">
+                <h3 id="room-modal-title">Kitchen</h3>
+                <div class="view-mode-controls">
+                    <button class="view-mode-btn active" id="normal-view-btn" data-mode="normal">
+                        <i class="fas fa-image"></i> Normal
+                    </button>
+                    <button class="view-mode-btn" id="panorama-view-btn" data-mode="panorama">
+                        <i class="fas fa-globe"></i> 360°
+                    </button>
+                </div>
+                <button class="close-btn" id="close-room-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="room-viewer">
+                <div class="image-viewer-container" id="image-viewer-container">
+                    <div class="image-viewer" id="image-viewer">
+                        <div class="room-placeholder" id="room-image">
+                            <i class="fas fa-image"></i>
+                            <p>No images uploaded yet</p>
+                            <small>Upload pictures first to view them here</small>
+                        </div>
+                    </div>
+                    <div class="panorama-viewer" id="panorama-viewer" style="display: none;">
+                        <!-- Photo Sphere Viewer will be initialized here -->
+                    </div>
+                </div>
+                <div class="image-controls">
+                    <div class="zoom-controls">
+                        <button class="control-btn zoom-out-btn" id="zoom-out" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span class="zoom-level" id="zoom-level">100%</span>
+                        <button class="control-btn zoom-in-btn" id="zoom-in" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="control-btn reset-zoom-btn" id="reset-zoom" title="Reset Zoom">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
+                    <div class="image-navigation" id="image-navigation" style="display: none;">
+                        <button class="nav-btn prev-btn" id="prev-image">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="image-counter" id="image-counter">1 / 1</span>
+                        <button class="nav-btn next-btn" id="next-image">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Design Room Modal -->
+    <div class="modal" id="design-room-modal">
+        <div class="modal-content design-room-modal-content">
+            <div class="modal-header">
+                <h3>Design Room Online</h3>
+                <button class="close-btn" id="close-design-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="design-room-content">
+                <div class="design-options">
+                    <h4><i class="fas fa-globe"></i> Option 1: Sweet Home 3D Online</h4>
+                    <p>Design your room directly in the browser - no installation needed!</p>
+                    <button class="launch-online-btn" id="launch-online-btn">
+                        <i class="fas fa-external-link-alt"></i> Open Sweet Home 3D Online
+                    </button>
+                    
+                    <h4><i class="fas fa-download"></i> Option 2: Desktop Application</h4>
+                    <p>Use the full desktop version for advanced features:</p>
+                    <button class="launch-desktop-btn" id="launch-desktop-btn">
+                        <i class="fas fa-desktop"></i> Launch Desktop App
+                    </button>
+                </div>
+                
+                <div class="design-features">
+                    <h4><i class="fas fa-star"></i> Features Available</h4>
+                    <ul>
+                        <li><strong>2D Floor Plan:</strong> Draw walls, rooms, and layouts</li>
+                        <li><strong>3D Furniture:</strong> Add and arrange furniture</li>
+                        <li><strong>360° Panoramas:</strong> Export immersive room views</li>
+                        <li><strong>Real-time Preview:</strong> See changes instantly</li>
+                        <li><strong>Collaboration:</strong> Share designs with your partner</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create 360° Panorama Modal -->
+    <div class="modal" id="create-panorama-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create 360° Panorama</h3>
+                <button class="close-btn" id="close-panorama-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="panorama-creation-content">
+                <div class="panorama-steps">
+                    <h4><i class="fas fa-download"></i> Step 1: Launch Sweet Home 3D</h4>
+                    <p>Click the button below to open Sweet Home 3D on your computer:</p>
+                    <button class="launch-sweethome-btn" id="launch-sweethome-btn">
+                        <i class="fas fa-external-link-alt"></i> Launch Sweet Home 3D
+                    </button>
+                    
+                    <h4><i class="fas fa-draw-polygon"></i> Step 2: Design Your Room</h4>
+                    <div class="instruction-box">
+                        <ol>
+                            <li>Draw your room plan using the wall tools</li>
+                            <li>Add furniture from the catalog</li>
+                            <li>Set up lighting and textures</li>
+                            <li>Position the camera where you want the panorama</li>
+                        </ol>
+                    </div>
+                    
+                    <h4><i class="fas fa-camera"></i> Step 3: Create 360° Panorama</h4>
+                    <div class="instruction-box">
+                        <ol>
+                            <li>Go to <strong>File → Export → 360° Panorama</strong></li>
+                            <li>Choose your desired settings (resolution, format)</li>
+                            <li>Save the panorama image</li>
+                            <li>Upload it to this website using "Upload Pictures"</li>
+                        </ol>
+                    </div>
+                    
+                    <h4><i class="fas fa-eye"></i> Step 4: View in 360°</h4>
+                    <p>Once uploaded, use the "View Room" button and switch to "360°" mode to see your panorama!</p>
+                </div>
+                
+                <div class="panorama-tips">
+                    <h4><i class="fas fa-lightbulb"></i> Tips for Better Panoramas</h4>
+                    <ul>
+                        <li><strong>High Resolution:</strong> Use at least 2048x1024 for good quality</li>
+                        <li><strong>Camera Position:</strong> Place camera at eye level (1.6m height)</li>
+                        <li><strong>Lighting:</strong> Add realistic lighting for better results</li>
+                        <li><strong>Furniture:</strong> Include all planned furniture for accurate planning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sweet Home 3D Quick Guide Modal -->
+    <div class="modal" id="quick-guide-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-book"></i> Sweet Home 3D Quick Guide</h3>
+                <button class="close-btn" id="close-guide-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="guide-content">
+                <div class="guide-section">
+                    <h4><i class="fas fa-play"></i> Getting Started</h4>
+                    <div class="guide-step">
+                        <h5>1. Create New Project</h5>
+                        <p>File → New → Choose your room dimensions</p>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <h5>2. Draw Walls</h5>
+                        <p>Click "Wall" tool → Click to start wall → Click to end wall → Press ESC</p>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <h5>3. Add Doors & Windows</h5>
+                        <p>Click "Door" or "Window" tool → Click on wall where you want it</p>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h4><i class="fas fa-couch"></i> Adding Furniture</h4>
+                    <div class="guide-step">
+                        <h5>1. Open Catalog</h5>
+                        <p>View → Catalog (or press F2)</p>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <h5>2. Browse Categories</h5>
+                        <p>Kitchen → Appliances, Bathroom → Fixtures, etc.</p>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <h5>3. Add to Room</h5>
+                        <p>Drag item from catalog to room → Use handles to resize/rotate</p>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h4><i class="fas fa-camera"></i> Creating 360° Panoramas</h4>
+                    <div class="guide-step">
+                        <h5>1. Switch to 3D View</h5>
+                        <p>View → 3D View (or press F3)</p>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <h5>2. Position Camera</h5>
+                        <p>Right-click and drag to move camera to center of room</p>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <h5>3. Export Panorama</h5>
+                        <p>File → Export → Image → Check "Panorama" → Set resolution → Save</p>
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h4><i class="fas fa-star"></i> Pro Tips</h4>
+                    <ul>
+                        <li><strong>Undo/Redo:</strong> Ctrl+Z / Ctrl+Y</li>
+                        <li><strong>Save Often:</strong> Ctrl+S</li>
+                        <li><strong>Zoom:</strong> Mouse wheel or Ctrl + mouse wheel</li>
+                        <li><strong>Pan:</strong> Middle mouse button + drag</li>
+                        <li><strong>Rotate 3D:</strong> Right mouse button + drag</li>
+                    </ul>
+                </div>
+                
+                <div class="guide-section">
+                    <h4><i class="fas fa-tools"></i> Troubleshooting</h4>
+                    <ul>
+                        <li><strong>Software won't start:</strong> Run in terminal: <code>sweethome3d</code></li>
+                        <li><strong>Can't find panorama export:</strong> Try File → Export → Image → Look for "Panorama" checkbox</li>
+                        <li><strong>Furniture won't place:</strong> Make sure you're in "Furniture" mode (not "Wall" mode)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/photo-sphere-viewer@4.0.5/dist/photo-sphere-viewer.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
