@@ -828,9 +828,13 @@ function showUserInterface() {
         loginActions.style.display = 'none';
     }
     
-    // Show admin button for Asaf Eden (admin)
-    if (adminBtn && currentUser.username === 'Asaf Eden') {
-        adminBtn.style.display = 'flex';
+    // Show admin button only for Asaf Eden (admin)
+    if (adminBtn) {
+        if (currentUser.username === 'Asaf Eden') {
+            adminBtn.style.display = 'flex';
+        } else {
+            adminBtn.style.display = 'none';
+        }
     }
 }
 
@@ -905,6 +909,12 @@ function handleLogin(e) {
         hideLoginModal();
         showUserInterface();
         
+        // Hide admin button for non-admin users
+        const adminBtn = document.getElementById('admin-btn');
+        if (adminBtn && username !== 'Asaf Eden') {
+            adminBtn.style.display = 'none';
+        }
+        
         showNotification(`Welcome back, ${username}!`, 'success');
     } else {
         showNotification('Invalid username or password', 'error');
@@ -936,6 +946,13 @@ function handleRegister(e) {
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     hideLoginModal();
     showUserInterface();
+    
+    // Hide admin button for new users
+    const adminBtn = document.getElementById('admin-btn');
+    if (adminBtn && username !== 'Asaf Eden') {
+        adminBtn.style.display = 'none';
+    }
+    
     showNotification('Registration successful!', 'success');
 }
 
