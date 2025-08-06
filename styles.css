@@ -1184,15 +1184,21 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
+        padding: 10px;
     }
     
     .header-content h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
     .nav-container {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        padding: 12px 8px;
+        font-size: 0.85rem;
     }
     
     .area-header {
@@ -1201,17 +1207,73 @@ body {
         align-items: stretch;
     }
     
+    .area-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .add-item-btn, .upload-pictures-btn, .view-room-btn, 
+    .create-panorama-btn, .design-room-btn, .quick-guide-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 15px;
+        font-size: 1rem;
+    }
+    
     .stats-bar {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
     
     .modal-content {
-        margin: 20px;
-        padding: 20px;
+        margin: 10px;
+        padding: 15px;
+        max-height: 90vh;
+        overflow-y: auto;
     }
     
     .form-actions {
         flex-direction: column;
+        gap: 10px;
+    }
+    
+    .item-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .item-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Mobile-specific modal improvements */
+    .modal-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .guide-content {
+        max-height: 70vh;
+    }
+    
+    .guide-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .design-room-content {
+        gap: 1rem;
+    }
+    
+    .launch-online-btn, .launch-desktop-btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 1rem;
     }
 }
 

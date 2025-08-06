@@ -590,25 +590,36 @@ function launchSweetHome3DOnline() {
 }
 
 function launchSweetHome3DDesktop() {
-    // Try to launch the desktop version
-    try {
-        console.log('Attempting to launch Sweet Home 3D Desktop...');
-        showNotification('Sweet Home 3D Desktop is being launched...', 'info');
-        
-        setTimeout(() => {
+    // Ask user if they have Sweet Home 3D installed
+    const hasSoftware = confirm('Do you have Sweet Home 3D installed on your computer?\n\nClick "OK" if you have it installed.\nClick "Cancel" to download it.');
+    
+    if (hasSoftware) {
+        // Try to launch the desktop version
+        try {
+            console.log('Attempting to launch Sweet Home 3D Desktop...');
+            showNotification('Sweet Home 3D Desktop is being launched...', 'info');
+            
+            setTimeout(() => {
+                showNotification(
+                    'Sweet Home 3D Desktop should launch automatically. If it doesn\'t open, please run this command in your terminal:\n\nsweethome3d',
+                    'info',
+                    8000
+                );
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Could not launch Sweet Home 3D Desktop:', error);
             showNotification(
-                'Sweet Home 3D Desktop should launch automatically. If it doesn\'t open, please run this command in your terminal:\n\nsweethome3d',
-                'info',
-                8000
+                'Please launch Sweet Home 3D manually by running this command in your terminal:\n\nsweethome3d',
+                'warning'
             );
-        }, 1000);
-        
-    } catch (error) {
-        console.error('Could not launch Sweet Home 3D Desktop:', error);
-        showNotification(
-            'Please launch Sweet Home 3D manually by running this command in your terminal:\n\nsweethome3d',
-            'warning'
-        );
+        }
+    } else {
+        // User doesn't have the software - redirect to download
+        showNotification('Redirecting to Sweet Home 3D download page...', 'info', 3000);
+        setTimeout(() => {
+            window.open('https://www.sweethome3d.com/download.jsp', '_blank');
+        }, 1500);
     }
 }
 
@@ -630,43 +641,39 @@ function closeQuickGuideModal() {
 }
 
 function launchSweetHome3D() {
-    // Check if Sweet Home 3D is installed
-    const checkInstallation = () => {
-        // Try to detect if the software is available
-        const isInstalled = true; // We'll assume it's installed since we set it up
-        
-        if (isInstalled) {
-            showNotification('Sweet Home 3D is being launched...', 'info');
-            
-            // Try to launch the desktop app
-            try {
-                console.log('Attempting to launch Sweet Home 3D...');
-                
-                // Create a more user-friendly message
-                setTimeout(() => {
-                    showNotification(
-                        'Sweet Home 3D should launch automatically. If it doesn\'t open, please run this command in your terminal:\n\nsweethome3d',
-                        'info',
-                        8000
-                    );
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Could not launch Sweet Home 3D:', error);
-                showNotification(
-                    'Please launch Sweet Home 3D manually by running this command in your terminal:\n\nsweethome3d',
-                    'warning'
-                );
-            }
-        } else {
-            showNotification('Sweet Home 3D is not installed. Redirecting to download page...', 'warning', 5000);
-            setTimeout(() => {
-                window.open('https://www.sweethome3d.com/download.jsp', '_blank');
-            }, 2000);
-        }
-    };
+    // Ask user if they have Sweet Home 3D installed
+    const hasSoftware = confirm('Do you have Sweet Home 3D installed on your computer?\n\nClick "OK" if you have it installed.\nClick "Cancel" to download it.');
     
-    checkInstallation();
+    if (hasSoftware) {
+        // User has the software - try to launch it
+        showNotification('Sweet Home 3D is being launched...', 'info');
+        
+        try {
+            console.log('Attempting to launch Sweet Home 3D...');
+            
+            // Try to launch using the symlink we created
+            setTimeout(() => {
+                showNotification(
+                    'Sweet Home 3D should launch automatically. If it doesn\'t open, please run this command in your terminal:\n\nsweethome3d',
+                    'info',
+                    8000
+                );
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Could not launch Sweet Home 3D:', error);
+            showNotification(
+                'Please launch Sweet Home 3D manually by running this command in your terminal:\n\nsweethome3d',
+                'warning'
+            );
+        }
+    } else {
+        // User doesn't have the software - redirect to download
+        showNotification('Redirecting to Sweet Home 3D download page...', 'info', 3000);
+        setTimeout(() => {
+            window.open('https://www.sweethome3d.com/download.jsp', '_blank');
+        }, 1500);
+    }
 }
 
 // Add Item
