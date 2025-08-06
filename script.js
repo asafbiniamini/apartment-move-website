@@ -896,6 +896,26 @@ function loadUserData() {
         renderItems();
         updateStats();
         updateOverallBudget();
+    } else {
+        // Try to migrate old data if this is a new user
+        migrateOldData();
+    }
+}
+
+function migrateOldData() {
+    const oldData = localStorage.getItem('apartmentMoveData');
+    if (oldData) {
+        try {
+            items = JSON.parse(oldData);
+            saveUserData(); // Save to new user account
+            localStorage.removeItem('apartmentMoveData'); // Clean up old data
+            renderItems();
+            updateStats();
+            updateOverallBudget();
+            showNotification('Your existing data has been migrated to your account!', 'success');
+        } catch (error) {
+            console.error('Error migrating data:', error);
+        }
     }
 }
 
