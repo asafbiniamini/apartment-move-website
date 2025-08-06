@@ -9,6 +9,7 @@ let items = {
     garden: [],
     office: []
 };
+let missions = []; // New: separate mission checklist data
 
 // DOM Elements
 let areaTitle, itemsContainer, addItemBtn, addItemModal, closeModalBtn, cancelAddBtn, addItemForm, navBtns;
@@ -1210,30 +1211,12 @@ function closeMissionChecklistModal() {
 }
 
 function loadMissionChecklist() {
-    const allItems = [];
-    const areaNames = {
-        kitchen: 'Kitchen',
-        bedroom: 'Bedroom',
-        living: 'Living Room',
-        bathroom: 'Bathroom',
-        garden: 'Garden',
-        office: 'Office'
-    };
+    // Load missions from localStorage
+    const userMissions = localStorage.getItem(`missions_${currentUser.username}`) || '[]';
+    missions = JSON.parse(userMissions);
     
-    // Collect all items from all areas
-    Object.keys(items).forEach(area => {
-        const areaItems = items[area];
-        areaItems.forEach(item => {
-            allItems.push({
-                ...item,
-                area: area,
-                areaName: areaNames[area]
-            });
-        });
-    });
-    
-    // Sort items by priority (3 stars first, then 2, then 1)
-    allItems.sort((a, b) => {
+    // Sort missions by priority (3 stars first, then 2, then 1)
+    missions.sort((a, b) => {
         const priorityA = a.priority || 1;
         const priorityB = b.priority || 1;
         return priorityB - priorityA; // Higher priority first
@@ -1246,58 +1229,148 @@ function loadMissionChecklist() {
     const checklistTbody = document.getElementById('checklist-tbody');
     
     if (totalTasksCount) {
-        totalTasksCount.textContent = allItems.length;
+        totalTasksCount.textContent = missions.length;
     }
     
     if (completedTasksCount) {
-        const completedCount = allItems.filter(item => item.completed).length;
+        const completedCount = missions.filter(mission => mission.completed).length;
         completedTasksCount.textContent = completedCount;
     }
     
     if (remainingTasksCount) {
-        const remainingCount = allItems.filter(item => !item.completed).length;
+        const remainingCount = missions.filter(mission => !mission.completed).length;
         remainingTasksCount.textContent = remainingCount;
     }
     
     if (checklistTbody) {
-        if (allItems.length === 0) {
+        if (missions.length === 0) {
             checklistTbody.innerHTML = `
                 <tr>
                     <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
                         <i class="fas fa-clipboard-list" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                        <h3>No Tasks Yet</h3>
-                        <p>Add some items to your areas to see them here!</p>
+                        <h3>No Missions Yet</h3>
+                        <p>Click "Add Mission" to create your first mission!</p>
                     </td>
                 </tr>
             `;
         } else {
-            checklistTbody.innerHTML = allItems.map((item, index) => {
-                // Generate a random deadline (for demo purposes)
-                const today = new Date();
-                const deadline = new Date(today.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000);
-                const deadlineStr = deadline.toLocaleDateString('en-US', { 
+            checklistTbody.innerHTML = missions.map((mission, index) => {
+                const deadlineDate = new Date(mission.deadline);
+                const deadlineStr = deadlineDate.toLocaleDateString('en-US', { 
                     month: 'short', 
                     day: 'numeric',
                     year: 'numeric'
                 });
                 
                 return `
-                    <tr class="${item.completed ? 'completed' : ''}" data-id="${item.id}" data-area="${item.area}">
+                    <tr class="${mission.completed ? 'completed' : ''}" data-id="${mission.id}">
                         <td>${index + 1}</td>
-                        <td>${item.name}</td>
-                        <td><i class="fas fa-map-marker-alt"></i> ${item.areaName}</td>
-                        <td>₪${item.price.toFixed(2)}</td>
+                        <td>${mission.description}</td>
+                        <td><i class="fas fa-tasks"></i> Mission</td>
+                        <td>-</td>
                         <td>${deadlineStr}</td>
                         <td>
-                            <span class="status-badge ${item.completed ? 'completed' : 'pending'}" onclick="toggleComplete('${item.id}')">
-                                ${item.completed ? '✓ Completed' : '⏳ Pending'}
+                            <span class="status-badge ${mission.completed ? 'completed' : 'pending'}" onclick="toggleMissionComplete('${mission.id}')">
+                                ${mission.completed ? '✓ Completed' : '⏳ Pending'}
                             </span>
+                            <button class="delete-mission-btn" onclick="deleteMission('${mission.id}')" style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
     }
+}
+
+// Mission Management Functions
+function openAddMissionModal() {
+    const addMissionModal = document.getElementById('add-mission-modal');
+    if (addMissionModal) {
+        addMissionModal.classList.add('show');
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('mission-deadline').value = today;
+        // Reset priority to 1
+        updateMissionPriorityButtons(1);
+    }
+}
+
+function closeAddMissionModal() {
+    const addMissionModal = document.getElementById('add-mission-modal');
+    if (addMissionModal) {
+        addMissionModal.classList.remove('show');
+    }
+}
+
+function handleAddMission(e) {
+    e.preventDefault();
+    
+    const description = document.getElementById('mission-description').value.trim();
+    const deadline = document.getElementById('mission-deadline').value;
+    const priority = parseInt(document.getElementById('mission-priority-input').value);
+    
+    if (!description || !deadline) {
+        showNotification('Please fill in all fields', 'error');
+        return;
+    }
+    
+    const newMission = {
+        id: Date.now().toString(),
+        description: description,
+        deadline: deadline,
+        priority: priority,
+        completed: false,
+        createdAt: new Date().toISOString()
+    };
+    
+    missions.push(newMission);
+    saveMissions();
+    
+    // Close modal and refresh
+    closeAddMissionModal();
+    loadMissionChecklist();
+    
+    showNotification('Mission added successfully!', 'success');
+}
+
+function toggleMissionComplete(missionId) {
+    const mission = missions.find(m => m.id === missionId);
+    if (mission) {
+        mission.completed = !mission.completed;
+        saveMissions();
+        loadMissionChecklist();
+    }
+}
+
+function deleteMission(missionId) {
+    if (confirm('Are you sure you want to delete this mission?')) {
+        missions = missions.filter(m => m.id !== missionId);
+        saveMissions();
+        loadMissionChecklist();
+        showNotification('Mission deleted successfully!', 'success');
+    }
+}
+
+function saveMissions() {
+    if (currentUser) {
+        localStorage.setItem(`missions_${currentUser.username}`, JSON.stringify(missions));
+    }
+}
+
+function updateMissionPriorityButtons(priority) {
+    const priorityBtns = document.querySelectorAll('#add-mission-modal .priority-btn');
+    const priorityInput = document.getElementById('mission-priority-input');
+    
+    priorityBtns.forEach(btn => {
+        btn.classList.remove('selected');
+        if (parseInt(btn.dataset.priority) === priority) {
+            btn.classList.add('selected');
+        }
+    });
+    
+    priorityInput.value = priority;
 }
 
 function downloadMissionChecklistPDF() {
@@ -1307,30 +1380,12 @@ function downloadMissionChecklistPDF() {
         return;
     }
     
-    const allItems = [];
-    const areaNames = {
-        kitchen: 'Kitchen',
-        bedroom: 'Bedroom',
-        living: 'Living Room',
-        bathroom: 'Bathroom',
-        garden: 'Garden',
-        office: 'Office'
-    };
+    // Load missions
+    const userMissions = localStorage.getItem(`missions_${currentUser.username}`) || '[]';
+    const missions = JSON.parse(userMissions);
     
-    // Collect all items from all areas
-    Object.keys(items).forEach(area => {
-        const areaItems = items[area];
-        areaItems.forEach(item => {
-            allItems.push({
-                ...item,
-                area: area,
-                areaName: areaNames[area]
-            });
-        });
-    });
-    
-    // Sort items by priority
-    allItems.sort((a, b) => {
+    // Sort missions by priority
+    missions.sort((a, b) => {
         const priorityA = a.priority || 1;
         const priorityB = b.priority || 1;
         return priorityB - priorityA;
@@ -1352,8 +1407,8 @@ function downloadMissionChecklistPDF() {
     doc.text(`Generated on: ${today.toLocaleDateString()}`, 20, 40);
     
     // Add summary
-    const totalTasks = allItems.length;
-    const completedTasks = allItems.filter(item => item.completed).length;
+    const totalTasks = missions.length;
+    const completedTasks = missions.filter(mission => mission.completed).length;
     const remainingTasks = totalTasks - completedTasks;
     
     doc.setFontSize(14);
@@ -1361,15 +1416,14 @@ function downloadMissionChecklistPDF() {
     doc.text('Summary:', 20, 55);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Total Tasks: ${totalTasks}`, 20, 65);
+    doc.text(`Total Missions: ${totalTasks}`, 20, 65);
     doc.text(`Completed: ${completedTasks}`, 20, 75);
     doc.text(`Remaining: ${remainingTasks}`, 20, 85);
     
     // Prepare table data
-    const tableData = allItems.map((item, index) => {
-        const today = new Date();
-        const deadline = new Date(today.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000);
-        const deadlineStr = deadline.toLocaleDateString('en-US', { 
+    const tableData = missions.map((mission, index) => {
+        const deadlineDate = new Date(mission.deadline);
+        const deadlineStr = deadlineDate.toLocaleDateString('en-US', { 
             month: 'short', 
             day: 'numeric',
             year: 'numeric'
@@ -1377,18 +1431,18 @@ function downloadMissionChecklistPDF() {
         
         return [
             (index + 1).toString(),
-            item.name,
-            item.areaName,
-            `₪${item.price.toFixed(2)}`,
+            mission.description,
+            'Mission',
+            '-',
             deadlineStr,
-            item.completed ? 'Completed' : 'Pending'
+            mission.completed ? 'Completed' : 'Pending'
         ];
     });
     
     // Add table
     doc.autoTable({
         startY: 100,
-        head: [['#', 'Description', 'Area', 'Price', 'Deadline', 'Status']],
+        head: [['#', 'Description', 'Type', 'Price', 'Deadline', 'Status']],
         body: tableData,
         theme: 'grid',
         headStyles: {
@@ -1864,6 +1918,37 @@ function setupEventListeners() {
     if (closeMissionChecklistModalBtn) {
         closeMissionChecklistModalBtn.addEventListener('click', closeMissionChecklistModal);
     }
+    
+    // Mission Management Event Listeners
+    const addMissionBtn = document.getElementById('add-mission-btn');
+    const closeAddMissionModalBtn = document.getElementById('close-add-mission-modal');
+    const cancelAddMissionBtn = document.getElementById('cancel-add-mission');
+    const addMissionForm = document.getElementById('add-mission-form');
+    
+    if (addMissionBtn) {
+        addMissionBtn.addEventListener('click', openAddMissionModal);
+    }
+    
+    if (closeAddMissionModalBtn) {
+        closeAddMissionModalBtn.addEventListener('click', closeAddMissionModal);
+    }
+    
+    if (cancelAddMissionBtn) {
+        cancelAddMissionBtn.addEventListener('click', closeAddMissionModal);
+    }
+    
+    if (addMissionForm) {
+        addMissionForm.addEventListener('submit', handleAddMission);
+    }
+    
+    // Mission priority buttons
+    const missionPriorityBtns = document.querySelectorAll('#add-mission-modal .priority-btn');
+    missionPriorityBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const priority = parseInt(this.dataset.priority);
+            updateMissionPriorityButtons(priority);
+        });
+    });
     
     // Download PDF Button
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
